@@ -13,6 +13,6 @@ module.exports = async (req, res, next) => {
     }
     catch (error){
         console.error(error);
-        return res.status(401).json({error: 'Unauthorized'});
+        res.status(401).json({ error: 'Invalid token' });
     }
 }
