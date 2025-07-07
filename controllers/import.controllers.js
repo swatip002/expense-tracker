@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parse');
 const xlsx = require('xlsx');
-const Expense = require('../models/Expense');
-const extractTransactionDetails = require('../utils/extractTransaction');
+const Expense = require('../models/expense.model');
+const extractTransactionDetails = require('../utils/extractTransactions');
 
 exports.importTransactions = async (req, res) => {
   try {

@@ -1,8 +1,8 @@
 const Tesseract = require('tesseract.js');
 const path = require('path');
 const fs = require('fs/promises');
-const Expense = require('../models/Expense');
-const extractTransactionDetails = require('../utils/extractTransaction');
+const Expense = require('../models/expense.model');
+const extractTransactionDetails = require('../utils/extractTransactions');
 
 exports.extractReceiptData = async (req, res) => {
   try {
