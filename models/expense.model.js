@@ -5,17 +5,28 @@ const expenseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    category: {
+    title: { 
+        type: String, 
+        required: true
+     },
+    amount: { 
+        type: Number, 
+        required: true 
+    },
+    category: { 
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        enum: ['Food & Beverages', 'Groceries', 'Travel', 'Clothes & Accessories', 'Education', 'Bills & Utilities', 'Entertainment', 'Health', 'Other']
     },
-    amount: {
-        type: Number,
-        required: true
+    date: { 
+        type: Date, 
+        default: Date.now 
     },
-    date:{
-        type:Date,
-        default:Date.now
+    source: { 
+        type: String, 
+        enum: ['manual', 'receipt', 'upi_csv'], 
+        default: 'manual' 
     }
 });
 
