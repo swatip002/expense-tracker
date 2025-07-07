@@ -4,6 +4,7 @@ const authRoutes = require('./routes/auth.routes');
 const expenseRoutes = require('./routes/expense.routes');
 const receiptRoutes = require('./routes/receipt.routes');
 const importRoutes = require('./routes/import.routes');
+const budgetRoutes = require('./routes/budget.routes');
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/receipt', receiptRoutes);
 app.use('/api/import', importRoutes);
+app.use('/api/budget', budgetRoutes);
 
 module.exports = app;
