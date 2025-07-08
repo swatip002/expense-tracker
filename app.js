@@ -8,11 +8,14 @@ const expenseRoutes = require('./routes/expense.routes');
 const receiptRoutes = require('./routes/receipt.routes');
 const importRoutes = require('./routes/import.routes');
 const budgetRoutes = require('./routes/budget.routes');
-const startRecurringJob = require('./config/cron');
+const startRecurringJob = require('./cron/recurringRunner');
 const analyticsRoutes = require('./routes/analytics.routes');
 const recurringRoutes = require('./routes/recurringTransactions.routes');
 const filterRoutes = require('./routes/filter.routes');
 const notificationRoutes = require('./routes/notification.routes');
+const startReportGenerator = require('./cron/reportGenerator');
+const reportRoutes = require('./routes/report.routes');
+
 
 const app = express();
 
@@ -22,6 +25,7 @@ app.use(express.json());
 app.use(passport.initialize());
 
 startRecurringJob();// initialize recurring jobs
+startReportGenerator();//initialize report generator jobs
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -33,5 +37,6 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/recurring', recurringRoutes);
 app.use('/api/filter', filterRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/reports', reportRoutes);
 
 module.exports = app;
