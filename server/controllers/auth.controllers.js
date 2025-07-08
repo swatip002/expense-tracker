@@ -63,6 +63,10 @@ exports.login = async(req,res) => {
     } 
 };
 
+exports.logout = (req, res) => {
+    
+}
+
 exports.googleAuth = (req, res) => {
     const user = req.user;
     const token = createToken(user._id);
