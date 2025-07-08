@@ -63,3 +63,16 @@ exports.login = async(req,res) => {
     } 
 };
 
+exports.googleAuth = (req, res) => {
+    const user = req.user;
+    const token = createToken(user._id);
+    return res.status(200).json({
+        message: "Google login successful",
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email
+        },
+        token
+    });
+};
