@@ -76,3 +76,15 @@ exports.googleAuth = (req, res) => {
         token
     });
 };
+
+exports.updateTheme = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    user.theme = req.body.theme;
+    await user.save();
+    res.json({ theme: user.theme });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update theme' });
+  }
+};

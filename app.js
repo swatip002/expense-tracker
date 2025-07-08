@@ -12,6 +12,7 @@ const startRecurringJob = require('./config/cron');
 const analyticsRoutes = require('./routes/analytics.routes');
 const recurringRoutes = require('./routes/recurringTransactions.routes');
 const filterRoutes = require('./routes/filter.routes');
+const notificationRoutes = require('./routes/notification.routes');
 
 const app = express();
 
@@ -31,5 +32,6 @@ app.use('/api/budget', budgetRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/recurring', recurringRoutes);
 app.use('/api/filter', filterRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 module.exports = app;
