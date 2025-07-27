@@ -31,7 +31,7 @@ exports.setBudget = async (req, res) => {
 
 exports.getBudget = async (req, res) => {
     try {
-        const {category, period}  = req.body;
+        const {category, period}  = req.query;
         const query = { user: req.user.id};
         if(category !== undefined && category !== null){
             query.category = category;
@@ -47,3 +47,14 @@ exports.getBudget = async (req, res) => {
         res.status(500).json({ message: 'Internal server error'});
     }
 }
+
+exports.deleteBudget = async (req, res) => {
+  try {
+    const { category } = req.params;
+    await Budget.findOneAndDelete({ user: req.user.id, category });
+    res.status(200).json({ message: "Budget deleted" });
+  } catch (err) {
+    console.error("Error deleting budget:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

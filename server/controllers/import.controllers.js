@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const csv = require('csv-parse');
+const { parse } = require('csv-parse');
 const xlsx = require('xlsx');
 const Expense = require('../models/expense.model');
 const extractTransactionDetails = require('../utils/extractTransactions');
@@ -9,7 +9,7 @@ exports.importTransactions = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-    const filePath = path.join(__dirname, '..', req.file.path);
+    const filePath = req.file.path;
     const ext = path.extname(req.file.originalname).toLowerCase();
     let transactions = [];
 
@@ -17,7 +17,7 @@ exports.importTransactions = async (req, res) => {
       await new Promise((resolve, reject) => {
         const results = [];
         fs.createReadStream(filePath)
-          .pipe(csv({ columns: true, skip_empty_lines: true }))
+          .pipe(parse({ columns: true, skip_empty_lines: true }))
           .on('data', (row) => results.push(row))
           .on('end', () => { transactions = results; resolve(); })
           .on('error', (err) => reject(err));
@@ -31,32 +31,51 @@ exports.importTransactions = async (req, res) => {
     }
 
     let insertedCount = 0;
-    for (let tx of transactions) {
-      const rawText = tx.Description || tx.Remark || tx['Transaction Details'] || JSON.stringify(tx);
-      const extracted = await extractTransactionDetails(rawText);
+    let failedRows = [];
+    
+    for (let [index, tx] of transactions.entries()) {
+      try {
+        const rawText = tx.Description || tx.Remark || tx['Transaction Details'] || JSON.stringify(tx);
+        const extracted = await extractTransactionDetails(rawText);
+        
+        if (!extracted) {
+          failedRows.push({ row: index + 1, reason: 'Failed to extract transaction details' });
+          continue;
+        }
 
-      if (!extracted || !extracted.amount) continue;
+        if (!extracted.amount) {
+          failedRows.push({ row: index + 1, reason: 'Invalid amount in transaction' });
+          continue;
+        }
 
-      await Expense.create({
-        user: req.user.id,
-        amount: extracted.amount,
-        category: extracted.category,
-        date: new Date(extracted.date),
-        title: extracted.merchant,
-        source: 'upi_csv'
-      });
+        await Expense.create({
+          user: req.user.id,
+          amount: extracted.amount,
+          category: extracted.category,
+          date: new Date(extracted.date),
+          title: extracted.merchant,
+          source: 'upi_csv'
+        });
 
-      req.app.get('io').emit('transaction_update', {
-        userId: req.user.id,
-        amount: extracted.amount,
-        category: extracted.category
-      });
+        req.app.get('io').to(req.user.id).emit('transaction_update', {
+          userId: req.user.id,
+          amount: extracted.amount,
+          category: extracted.category
+        });
 
-      insertedCount++;
+        insertedCount++;
+      } catch (error) {
+        failedRows.push({ row: index + 1, reason: error.message });
+      }
     }
 
     fs.unlinkSync(filePath);
-    res.json({ message: 'Transactions imported successfully', count: insertedCount });
+    res.json({
+      message: 'Import completed',
+      success: insertedCount,
+      failed: failedRows.length,
+      failedDetails: failedRows
+    });
 
   } catch (err) {
     console.error(err);

@@ -22,16 +22,16 @@ exports.register = async (req,res) => {
         const token = createToken(user._id);
         await user.save();
         return res.status(201).json(
-            {message: "Registration successful"},
             {
+                message: "Registration successful",
                 user: 
                 {
                     id: user._id,
                     name: user.name,
                     email: user.email
                 },
-
-            }
+                token: token
+            }    
         );
     }
     catch (error){
@@ -56,6 +56,7 @@ exports.login = async(req,res) => {
         }
         const token = createToken(user._id);
         return res.status(200).json({message: "Login successful",user,token });
+        console.log('token:',token);
     }
     catch (error){
         console.error(error);
@@ -63,9 +64,7 @@ exports.login = async(req,res) => {
     } 
 };
 
-exports.logout = (req, res) => {
-    
-}
+
 
 exports.googleAuth = (req, res) => {
     const user = req.user;

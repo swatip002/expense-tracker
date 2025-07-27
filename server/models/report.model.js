@@ -7,7 +7,7 @@ const reportSchema = new mongoose.Schema({
     },
     period: {
         type: String,
-        enum: ['monthly', 'yearly'],
+        enum: ['weekly', 'monthly', 'yearly'],
         required: true
     },
     startDate: {

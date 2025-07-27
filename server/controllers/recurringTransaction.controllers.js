@@ -51,3 +51,40 @@ exports.toggleRecurring = async (req, res) => {
     res.status(500).json({ error: 'Failed to toggle' });
   }
 };
+
+// Update a recurring transaction
+exports.updateRecurring = async (req, res) => {
+  try {
+    const updated = await Recurring.findByIdAndUpdate(
+      req.params.id,
+      {
+        title: req.body.title,
+        amount: req.body.amount,
+        frequency: req.body.frequency,
+      },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Recurring transaction not found" });
+    }
+
+    res.status(200).json(updated);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Delete a recurring transaction
+exports.deleteRecurring = async (req, res) => {
+  try {
+    const deleted = await Recurring.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Recurring transaction not found" });
+    }
+    res.status(200).json({ message: "Deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+

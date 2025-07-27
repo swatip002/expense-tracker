@@ -19,7 +19,7 @@ Category breakdown: ${JSON.stringify(categoryTotals)}.
 
 Generate:
 1. A short summary of their spending.
-2. Personalized saving tips.
+2. Personalized saving tips and specify which category is most spend on.
 
 Return as strict JSON:
 {
@@ -101,6 +101,32 @@ function startReportGenerator() {
               period: 'monthly',
               startDate: startOfMonth,
               endDate: endOfMonth,
+              summary,
+              tips
+            });
+          }
+        }
+
+        // yearly
+        const startOfYear = new Date(today.getFullYear(), 0, 1);
+        const endOfYear = new Date(today.getFullYear(), 11, 31);
+        const yearExists = await Report.findOne({
+          user: userId,
+          period: 'yearly',
+          startDate: startOfYear
+        });
+        if (!yearExists) {
+          const expenses = await Expense.find({
+            user: userId,
+            date: { $gte: startOfYear, $lte: endOfYear }
+          });
+          if (expenses.length > 0) {
+            const { summary, tips } = await generateReportText(expenses, 'year');
+            await Report.create({
+              user: userId,
+              period: 'yearly',
+              startDate: startOfYear,
+              endDate: endOfYear,
               summary,
               tips
             });

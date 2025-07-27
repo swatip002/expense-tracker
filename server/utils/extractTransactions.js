@@ -32,8 +32,9 @@ Focus on making sure the category is reasonable for this transaction.
 Only output valid JSON, without any explanation.`;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response.text();
-
+    let response = await result.response.text();
+    // Remove markdown code block if present
+    response = response.replace(/```json|```/g, '').trim();
     return JSON.parse(response);
   } catch (err) {
     console.error("Gemini parse failed", err);

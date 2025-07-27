@@ -15,12 +15,17 @@ const filterRoutes = require('./routes/filter.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const startReportGenerator = require('./cron/reportGenerator');
 const reportRoutes = require('./routes/report.routes');
-
+const userRoutes = require('./routes/user.routes')
 
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors(
+    {
+        origin: "http://localhost:5173",
+        credentials: true,
+    }
+));
 app.use(express.json());
 app.use(passport.initialize());
 
@@ -38,5 +43,6 @@ app.use('/api/recurring', recurringRoutes);
 app.use('/api/filter', filterRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/user', userRoutes);
 
 module.exports = app;
